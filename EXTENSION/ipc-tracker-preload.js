@@ -49,48 +49,24 @@ ipcRenderer.on('ipc-event', (event, data) => {
   )
 })
 
-// to setup the IPC tracker in the renderer process
+// to setup the IPC tracker in the renderer process, it goes in the preload script i.e. preload/index.js
 export function setupIpcTracker() {
-
-  // add the event listener in the html page
-  window.addEventListener('message', function (event) {
-    if (event.source !== window || !event.data || event.data.source !== 'ipc-tracker') return
-    window.postMessage(
-      {
-        source: 'ipc-tracker-page',
-        event: event.data.event
-      },
-      '*'
-    )
-  })
-
-  // to test if eventlisteners work there or not, I'll remove this later
-  window.addEventListener('keydown', function (e) {
-    if (e.key === 'y') {
-      console.log('Pressed Y inside preload (context isolated): Y pressed')
-    }
-  })
-
   const wrappedIpcRenderer = {
-    // track send
     send: (channel, ...args) => {
       trackIpcEvent('renderer-to-main', channel, args)
       return originalSend.call(ipcRenderer, channel, ...args)
     },
 
-    // track invoke
     invoke: (channel, ...args) => {
       trackIpcEvent('renderer-to-main', channel, args)
       return originalInvoke.call(ipcRenderer, channel, ...args)
     },
 
-    // track sendSync
     sendSync: (channel, ...args) => {
       trackIpcEvent('renderer-to-main', channel, args)
       return originalSendSync.call(ipcRenderer, channel, ...args)
     },
 
-    // track on
     on: (channel, listener) => {
       const wrappedListener = (...args) => {
         trackIpcEvent('main-to-renderer', channel, args)
@@ -99,7 +75,6 @@ export function setupIpcTracker() {
       return originalOn.call(ipcRenderer, channel, wrappedListener)
     },
 
-    // track once
     once: (channel, listener) => {
       const wrappedListener = (...args) => {
         trackIpcEvent('main-to-renderer', channel, args)
@@ -108,7 +83,7 @@ export function setupIpcTracker() {
       return originalOnce.call(ipcRenderer, channel, wrappedListener)
     },
 
-    // proxy other methods // ⚠️ NOTE : add more as needed here ⚠️
+    // proxy other methods // ⚠️ NOTE : I'll add more as needed here ⚠️
     removeListener: (...args) => ipcRenderer.removeListener(...args),
     removeAllListeners: (...args) => ipcRenderer.removeAllListeners(...args),
     eventNames: (...args) => ipcRenderer.eventNames(...args),

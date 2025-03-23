@@ -18,7 +18,6 @@ console.log('background.js: touched --------------')
 // listen for connections from the devtools panel
 chrome.runtime.onConnect.addListener(function (port) {
   if (port.name === 'ipc-tracker-panel') {
-    // Store the panel connection
     connections.panel = port
 
     port.onMessage.addListener(function (message) {
