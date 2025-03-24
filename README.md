@@ -1,6 +1,7 @@
 # electron-app
 
-An Electron application with React
+A YouTube Video that shows the extension working : https://youtu.be/EI8bs8Wbu3s
+![image](https://github.com/user-attachments/assets/2b062539-735d-424d-8360-c37311ebeb8f)
 
 ## Recommended IDE Setup
 
